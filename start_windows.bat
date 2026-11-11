@@ -23,17 +23,16 @@ if errorlevel 1 (
   pause
   exit /b 1
 )
-if not exist "frontend\node_modules" (
-  pushd frontend
-  call npm install
-  if errorlevel 1 (
-    popd
-    echo Frontend dependency install failed.
-    pause
-    exit /b 1
-  )
+rem Reconcile changed dependencies after git updates, not only on first launch.
+pushd frontend
+call npm install
+if errorlevel 1 (
   popd
+  echo Frontend dependency install failed.
+  pause
+  exit /b 1
 )
+popd
 start "ThemeLab Backend" /D "%~dp0backend" "%~dp0.venv\Scripts\python.exe" -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 start "ThemeLab Frontend" /D "%~dp0frontend" cmd /k npm run dev
 start "" "http://127.0.0.1:5173"

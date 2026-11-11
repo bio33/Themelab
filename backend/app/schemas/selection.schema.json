@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ThemeLab saved selection v1",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "theme_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]*$"
+    },
+    "theme_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "targets": {
+      "type": "object",
+      "properties": {
+        "phone": {
+          "type": "boolean"
+        },
+        "watch": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "phone",
+        "watch"
+      ],
+      "additionalProperties": false
+    },
+    "overrides": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "component_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]*$"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "provider_component": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slot_category": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "component_id",
+          "enabled"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "device_bindings": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "theme_id",
+    "theme_version",
+    "targets",
+    "overrides"
+  ],
+  "additionalProperties": false
+}

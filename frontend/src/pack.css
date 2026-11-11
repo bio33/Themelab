@@ -1,0 +1,346 @@
+.pack-studio {
+  margin-top: 18px;
+}
+.pack-studio h3 {
+  margin: 0;
+  font-size: 17px;
+}
+.pack-studio p {
+  line-height: 1.65;
+}
+.pack-studio button,
+.pack-studio select {
+  cursor: pointer;
+}
+.pack-studio input[type="checkbox"] {
+  accent-color: #ae87ff;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+.pack-studio a.button {
+  text-decoration: none;
+}
+.pack-studio .upload-button input {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.pack-studio .upload-button:focus-within {
+  outline: 2px solid #c4a4ff;
+  outline-offset: 3px;
+}
+.pack-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.pack-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #20242f;
+  border: 1px solid #363c4e;
+  color: #f0edf7;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: left;
+  min-width: 0;
+}
+.pack-card.selected {
+  border-color: #b697ff;
+  background: #2e2842;
+}
+.pack-card strong {
+  font-size: 14px;
+}
+.pack-card small,
+.pack-studio small,
+.pack-help {
+  color: #9fa9bd;
+  font-size: 11px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.pack-swatches {
+  display: flex;
+  gap: 5px;
+}
+.pack-swatches i {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1px solid #ffffff30;
+}
+.pack-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: start;
+  margin: 26px 0 16px;
+}
+.pack-title p {
+  font-size: 12px;
+  color: #a3acc0;
+}
+.pack-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.pack-previews {
+  display: flex;
+  gap: 42px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  border: 1px solid #424452;
+  border-radius: 15px;
+  padding: 28px;
+  margin-bottom: 20px;
+  min-height: 335px;
+}
+.pack-previews p {
+  width: 100%;
+  text-align: center;
+  font-size: 11px;
+  color: #c0c5ce;
+  background: #111827dc;
+  padding: 7px;
+  border-radius: 6px;
+  margin: 0;
+}
+.pack-preview-phone {
+  width: 138px;
+  aspect-ratio: 6/13;
+  border: 5px solid #07090e;
+  border-radius: 24px;
+  background: #252839;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  color: #aaa;
+  font-size: 12px;
+  text-align: center;
+}
+.pack-preview-watch {
+  width: 205px;
+  aspect-ratio: 1;
+  border: 8px solid #555b64;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #1a1d26;
+  display: grid;
+  place-items: center;
+  color: #aaa;
+  font-size: 12px;
+}
+.pack-previews video,
+.pack-previews img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.pack-devices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin: 20px 0;
+}
+.pack-device {
+  border: 1px solid #353b4c;
+  border-radius: 12px;
+  padding: 18px;
+  min-width: 0;
+}
+.pack-device-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.pack-device-heading label {
+  font-size: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.pack-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 11px;
+  color: #abb4c5;
+  margin: 12px 0;
+}
+.pack-field select {
+  width: 100%;
+  background: #222735;
+  color: #ecedf5;
+  border: 1px solid #424a5d;
+  border-radius: 7px;
+  padding: 9px 8px;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.pack-required,
+.component-row {
+  padding: 14px 0;
+  border-bottom: 1px solid #33394a;
+}
+.pack-required > strong {
+  font-size: 12px;
+}
+.pack-required > small {
+  display: block;
+  margin-top: 9px;
+}
+.pack-tag {
+  display: inline-block;
+  border: 1px solid #514563;
+  color: #bda6e6;
+  border-radius: 12px;
+  font-size: 9px;
+  padding: 3px 7px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.component-row > label:first-child {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+}
+.component-row > label:first-child strong {
+  overflow-wrap: anywhere;
+}
+.component-row > small {
+  display: block;
+}
+.pack-error,
+.pack-message {
+  padding: 12px 14px;
+  border: 1px solid #834a56;
+  background: #39232d;
+  color: #fac0c8;
+  border-radius: 8px;
+  font-size: 12px;
+  margin-bottom: 15px;
+  overflow-wrap: anywhere;
+}
+.pack-message {
+  color: #a3e2ca;
+  background: #17332a;
+  border-color: #356954;
+}
+.pack-review,
+.pack-job {
+  border-top: 1px solid #41485d;
+  margin-top: 25px;
+  padding-top: 20px;
+}
+.pack-review p,
+.pack-job p {
+  color: #b4bed1;
+  font-size: 12px;
+}
+.pack-review-item {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 14px;
+  background: #212634;
+  border-radius: 8px;
+  margin: 10px 0;
+}
+.pack-review-item strong {
+  font-size: 12px;
+}
+.pack-review-item span {
+  font-size: 11px;
+  color: #b2a0d6;
+}
+.pack-job-item {
+  padding: 15px;
+  background: #202632;
+  border: 1px solid #394154;
+  border-radius: 9px;
+  margin: 10px 0;
+}
+.pack-job-item summary {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  font-size: 12px;
+}
+.pack-status {
+  font-size: 10px;
+  color: #d6beff;
+}
+.pack-status.applied {
+  color: #8fe0b9;
+}
+.pack-status.failed,
+.pack-status.unsupported {
+  color: #f0acaa;
+}
+.pack-status.pending_user_action {
+  color: #f3d18c;
+}
+.pack-job-item ol {
+  padding-left: 20px;
+  color: #b0bace;
+  font-size: 12px;
+  line-height: 1.9;
+}
+.pack-job-item code {
+  overflow-wrap: anywhere;
+}
+.pack-dependencies {
+  margin: 16px 0;
+  color: #b2bdd0;
+  font-size: 12px;
+}
+.pack-dependencies pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.pack-studio button:focus-visible,
+.pack-studio select:focus-visible,
+.pack-studio input:focus-visible {
+  outline: 2px solid #c4a4ff;
+  outline-offset: 3px;
+}
+@media (max-width: 850px) {
+  .pack-devices {
+    grid-template-columns: 1fr;
+  }
+  .pack-title {
+    flex-direction: column;
+  }
+  .pack-previews {
+    gap: 22px;
+  }
+  .pack-preview-watch {
+    width: 170px;
+  }
+  .pack-studio .panel-top {
+    flex-wrap: wrap;
+  }
+  .pack-job-item summary {
+    align-items: start;
+    flex-wrap: wrap;
+  }
+}

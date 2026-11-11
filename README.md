@@ -1,6 +1,8 @@
 # ThemeLab — Android Customization Studio
 
-A local Windows desktop-web app for managing multiple Android phones via ADB. **MVP v0.1** provides device discovery, serial-targeted actions, on-demand screenshots, theme management, wallpaper upload, and wallpaper staging + opening the system wallpaper picker.
+A local Windows desktop-web app for managing Android phones and Wear OS watches via ADB. **v0.2** adds versioned ZIP theme packs, verified phone/watch animations, saved widget/complication/Tile selections, capability discovery, apply reviews and resumable per-item jobs. The original still-wallpaper workflow remains available.
+
+See [Theme-pack workflow](docs/theme-packs/README.md) for the format, examples, API, adapter boundaries, tests and device handoffs. Install **FFmpeg and ffprobe** on PATH for live-media imports. After updating, install backend requirements and run `npm install` in `frontend`.
 
 **Important:** This version **does not automatically apply wallpapers, icon packs, live wallpapers, or Good Lock settings**. Applying a wallpaper is a manual confirmation on the phone. A future optional Android companion app can use the official `WallpaperManager` API for static wallpaper application, but live wallpaper and system-wide icons have extra platform limitations.
 
@@ -66,10 +68,10 @@ All state is stored locally. No cloud generation, login, or remote server is inc
 
 ## Roadmap
 
-- **v0.2:** Android companion APK, install over ADB, static wallpaper **apply** using `WallpaperManager` and `SET_WALLPAPER`. Show result/error per device.
-- **v0.3:** Motion wallpaper engine + preview/confirmation flow, matching icon assets, full theme package ZIP.
-- **v0.4:** OEM capability modules (Samsung Good Lock guidance, Pixel launcher integration, etc.) and reusable automation recipes.
-- **v0.5:** Optional authenticated ChatGPT image-generation integration, thumbnails, versioned theme packs, device-specific adaptation.
+- Android companion APK and static wallpaper application using `WallpaperManager` and `SET_WALLPAPER`.
+- Phone motion wallpaper engine and automated watch-face build tooling; the current ZIP workflow provides validated assets and guided deployment.
+- OEM/launcher integrations (Samsung Good Lock guidance, compatible launcher layouts) and reusable recipes.
+- Optional authenticated image-generation integration and device-specific adaptation. No generation service is currently included.
 
 Official Android documentation:
 - ADB: https://developer.android.com/tools/adb
