@@ -125,6 +125,7 @@ beforeEach(() => {
           kind: path.includes("PHONE") ? "phone" : "watch",
           model: "Connected device",
           launcher: "org.launcher/.Home",
+          matches: { "clock-widget": { label: "ThemeLab Clock" } },
           providers: {
             android_appwidget: {
               status: "queried",
@@ -234,16 +235,9 @@ describe("theme-pack interaction", () => {
       screen.getByRole("combobox", { name: "Target phone" }),
       "PHONE",
     );
-    const provider = await screen.findByRole("combobox", {
-      name: "Provider for Analog clock",
-    });
-    await screen.findByRole("option", { name: "org.clock/.Widget" });
-    await userEvent.selectOptions(provider, "org.clock/.Widget");
-    await waitFor(() =>
-      expect(saved.device_bindings.PHONE?.["clock-widget"]).toBe(
-        "org.clock/.Widget",
-      ),
-    );
+    await screen.findByText("Selected provider · ThemeLab Clock");
+    expect(screen.queryByRole("combobox", { name: /Provider for/ })).toBeNull();
+    expect(saved.device_bindings).toEqual({});
     await userEvent.click(
       screen.getByRole("checkbox", { name: "Apply to watch" }),
     );

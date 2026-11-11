@@ -53,8 +53,19 @@ def schema():
 
 
 @router.get("/devices/{serial}/capabilities")
-def capabilities(serial: str):
-    return device_adapters.discover(serial)
+def capabilities(
+    serial: str, pack_id: str | None = None, store: Store = Depends(get_store)
+):
+    snapshot = device_adapters.discover(serial)
+    if pack_id:
+        pack = checked_pack(store, pack_id)
+        selection = store.get("selection", pack_id, service.default_selection(pack))
+        snapshot["matches"] = {
+            c["id"]: service.provider_matching.resolve(c, snapshot, selection, serial)
+            for c in service.effective(pack, selection)
+            if c.get("provider") or c.get("options")
+        }
+    return snapshot
 
 
 @router.post("/import", status_code=201)
@@ -94,6 +105,11 @@ def jobs(store: Store = Depends(get_store)):
     return {
         "jobs": sorted(store.all("job"), key=lambda v: v["created_at"], reverse=True)
     }
+
+
+@router.post("/jobs/{job_id}/verify-placement")
+def verify_placement(job_id: str, store: Store = Depends(get_store)):
+    return service.verify_placement(store, job_id)
 
 
 @router.get("/jobs/{job_id}")

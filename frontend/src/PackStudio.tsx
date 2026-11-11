@@ -108,11 +108,12 @@ export function PackStudio({ devices = [] }: { devices?: Device[] }) {
     setCaps({});
     setCapErrors({});
     setPlan(null);
+    if (!packId || !selection) return;
     (["phone", "watch"] as const).forEach((role) => {
       const serial = serials[role];
       if (!serial) return;
       request<Capabilities>(
-        "/devices/" + encodeURIComponent(serial) + "/capabilities",
+        "/devices/" + encodeURIComponent(serial) + "/capabilities?pack_id=" + encodeURIComponent(packId),
         { signal: controller.signal },
       )
         .then((d) => setCaps((v) => ({ ...v, [role]: d })))
@@ -122,13 +123,14 @@ export function PackStudio({ devices = [] }: { devices?: Device[] }) {
         });
     });
     return () => controller.abort();
-  }, [serials.phone, serials.watch]);
+  }, [serials.phone, serials.watch, packId, selection]);
   useEffect(() => {
-    if (!job?.running) return;
+    const waiting = job?.items.some(i => i.prior_widget_ids && i.status === "pending_user_action");
+    if (!job || (!job.running && !waiting)) return;
     let stopped = false;
     const timer = setInterval(
       () =>
-        request<Job>("/jobs/" + job.id)
+        (job.running ? request<Job>("/jobs/" + job.id) : post<Job>("/jobs/" + job.id + "/verify-placement"))
           .then((value) => {
             if (!stopped) setJob(value);
           })
@@ -141,7 +143,7 @@ export function PackStudio({ devices = [] }: { devices?: Device[] }) {
       stopped = true;
       clearInterval(timer);
     };
-  }, [job?.id, job?.running]);
+  }, [job?.id, job?.running, job?.items]);
   useEffect(() => {
     if (job) setHistory((v) => [job, ...v.filter((old) => old.id !== job.id)]);
   }, [job]);
@@ -204,21 +206,6 @@ export function PackStudio({ devices = [] }: { devices?: Device[] }) {
       ],
     });
   }
-  function chooseProvider(c: ThemeComponent, value: string) {
-    if (!selection) return;
-    const serial = serials[c.device];
-    if (!serial) return;
-    const bindings = {
-      ...selection.device_bindings,
-      [serial]: { ...(selection.device_bindings?.[serial] ?? {}) },
-    };
-    if (value) bindings[serial][c.id] = value;
-    else delete bindings[serial][c.id];
-    const overrides = selection.overrides.map((o) =>
-      o.component_id === c.id ? { ...o, provider_component: null } : o,
-    );
-    void save({ ...selection, device_bindings: bindings, overrides });
-  }
   const title = pack?.manifest.theme.title ?? "Choose a theme";
   const controlsDisabled = busy || !!job?.running;
   function optional(c: ThemeComponent) {
@@ -227,15 +214,7 @@ export function PackStudio({ devices = [] }: { devices?: Device[] }) {
     const category = override?.slot_category ?? c.default_category;
     const provider =
       c.options?.find((o) => o.category === category)?.provider ?? c.provider;
-    const query = provider
-      ? caps[c.device]?.providers[provider.platform]
-      : undefined;
-    const serial = serials[c.device];
-    const binding =
-      selection?.device_bindings?.[serial]?.[c.id] ??
-      override?.provider_component ??
-      provider?.component ??
-      "";
+    const match = caps[c.device]?.matches?.[c.id];
     return (
       <div className="component-row" key={c.id}>
         <label>
@@ -270,35 +249,13 @@ export function PackStudio({ devices = [] }: { devices?: Device[] }) {
             </select>
           </label>
         )}
-        {enabled && provider && (
-          <>
-            <label className="pack-field">
-              Provider for {c.label}
-              <select
-                aria-label={`Provider for ${c.label}`}
-                value={binding}
-                disabled={controlsDisabled || !serial}
-                onChange={(e) => chooseProvider(c, e.target.value)}
-              >
-                <option value="">Choose/configure on device</option>
-                {binding && !query?.components.includes(binding) && (
-                  <option value={binding}>
-                    {binding} — unavailable or unverified
-                  </option>
-                )}
-                {query?.components.map((value) => (
-                  <option key={value} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <small>
-              {query?.status === "queried"
-                ? `${query.components.length} installed provider(s) discovered; data-type compatibility still needs checking.`
-                : "Provider availability is unverified. Select a connected device or choose in its system picker."}
-            </small>
-          </>
+        {enabled && provider && c.category !== "tile" && (
+          <small>
+            {!serials[c.device] ? "Select a device to check availability." :
+              !caps[c.device] ? (capErrors[c.device] || "Checking installed providers…") :
+              match ? "Selected provider · " + match.label :
+              "Unavailable · no verified compatible provider. Deselect to skip."}
+          </small>
         )}
         {enabled && c.dependency_ids && c.dependency_ids.length > 0 && (
           <small>
@@ -630,7 +587,7 @@ export function PackStudio({ devices = [] }: { devices?: Device[] }) {
                     {readable(i.mode)}
                   </span>
                   <small>{i.reason}</small>
-                  {i.provider && <small>Provider: {i.provider}</small>}
+                  {i.provider_label && <small>Selected provider · {i.provider_label}</small>}
                   <details>
                     <summary>Configuration and device steps</summary>
                     <ol>
@@ -769,7 +726,7 @@ export function PackStudio({ devices = [] }: { devices?: Device[] }) {
                   )}
                   {i.status === "pending_user_action" && !job.running && (
                     <div className="pack-toolbar">
-                      <button
+                      {i.prior_widget_ids ? <small>Waiting for Android to verify placement.</small> : <button
                         className="button primary small"
                         disabled={busy}
                         onClick={() =>
@@ -787,7 +744,7 @@ export function PackStudio({ devices = [] }: { devices?: Device[] }) {
                         }
                       >
                         I confirmed this on the device
-                      </button>
+                      </button>}
                       <button
                         className="button outlined small"
                         disabled={busy}

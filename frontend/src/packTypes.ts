@@ -119,6 +119,7 @@ export interface Device {
   model_hint?: string;
 }
 export interface Capabilities {
+  matches?: Record<string, { label: string } | null>;
   kind: string;
   model: string;
   launcher: string;
@@ -141,12 +142,14 @@ export interface ApplyItem {
   label: string;
   serial: string | null;
   provider: string | null;
+  provider_label?: string | null;
   asset: string | null;
   mode: string;
   reason: string;
   instructions: string[];
   status: ItemStatus | null;
-  verification: "none" | "user_reported";
+  verification: "none" | "user_reported" | "launcher_binding";
+  prior_widget_ids?: number[];
   staged_files: {
     path: string;
     transfer_verified: boolean;

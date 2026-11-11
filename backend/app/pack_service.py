@@ -8,7 +8,7 @@ import re
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 
-from . import adb, device_adapters
+from . import adb, device_adapters, provider_matching
 from .pack_import import PackError, safe_path, asset_records
 from .pack_models import Selection, ApplyItem
 from .pack_store import Store, LOCK, now
@@ -177,11 +177,22 @@ def make_plan(store: Store, pack_id, devices):
             or override.get("provider_component")
             or (provider_def or {}).get("component")
         )
-        if provider_def and provider:
-            query = snapshot.get("providers", {}).get(provider_def["platform"], {})
+        matched = None
+        if provider_def and c["category"] != "tile":
+            matched = provider_matching.resolve(c, snapshot, selection, serial)
+            provider = matched["component"] if matched else None
+            if not matched and serial and snapshot.get("kind") == role:
+                mode = "unsupported"
+                reason = (
+                    "Unavailable: no verified compatible provider. Deselect to skip."
+                )
+        elif c["category"] == "tile" and provider:
+            query = snapshot.get("providers", {}).get("wear_os_tile", {})
             if query.get("status") == "queried" and provider not in query["components"]:
                 mode = "unsupported"
-                reason = "Selected provider is unavailable on this device. Change provider or skip."
+                reason = (
+                    "Tile provider unavailable on the selected watch. Deselect to skip."
+                )
         config = c.get("config", {})
         instructions = []
         if c["category"] == "live" and role == "phone":
@@ -203,13 +214,16 @@ def make_plan(store: Store, pack_id, devices):
             instructions = [
                 "Touch and hold an empty Home screen area > Widgets.",
                 "Choose "
-                + c["label"]
+                + (matched["label"] if matched else c["label"])
                 + " from an installed provider, place it and configure it.",
                 "Suggested size/layout: " + json.dumps(c.get("placement", {})),
-                "Provider fonts/colors may be fixed. Verify appearance, then confirm here.",
+                "Android may ask you to tap Add. ThemeLab advances after it detects the new launcher binding.",
             ]
         elif c["category"] == "complication":
             instructions = [
+                "Use "
+                + (matched["label"] if matched else "a compatible provider")
+                + " in the face editor.",
                 "Touch and hold the active watch face > Customize/Edit > Complications.",
                 "Select slot "
                 + str(c["slot_id"])
@@ -240,6 +254,7 @@ def make_plan(store: Store, pack_id, devices):
                 label=c["label"],
                 serial=serial,
                 provider=provider,
+                provider_label=matched["label"] if matched else None,
                 asset=c.get("asset"),
                 mode=mode,
                 reason=reason,
@@ -314,6 +329,23 @@ def run_job(store, job_id):
                         raise adb.AdbError(
                             "Device role could not be verified; reconnect and review a new plan"
                         )
+                    pack = store.pack(job["pack_id"])
+                    plan = store.get("plan", job["plan_id"])
+                    component = next(
+                        c
+                        for c in effective(pack, plan["selection"])
+                        if c["id"] == item_id
+                    )
+                    if (
+                        component.get("provider") or component.get("options")
+                    ) and component["category"] != "tile":
+                        verified = provider_matching.resolve(
+                            component, current, plan["selection"], item["serial"]
+                        )
+                        if not verified or verified["component"] != item["provider"]:
+                            raise adb.AdbError(
+                                "Provider capabilities changed. Review a new plan."
+                            )
                     if item["provider"]:
                         platform = (
                             "android_appwidget"
@@ -332,7 +364,6 @@ def run_job(store, job_id):
                             raise adb.AdbError(
                                 "Provider is no longer available; change provider and review a new plan"
                             )
-                    pack = store.pack(job["pack_id"])
                     adapter = device_adapters.ADAPTERS[item["device"]]
                     if item["asset"]:
                         source = safe_path(store.assets / job["pack_id"], item["asset"])
@@ -361,6 +392,14 @@ def run_job(store, job_id):
                             adapter.open_settings(item["serial"])
                         except adb.AdbError as exc:
                             item["reason"] += " " + str(exc)
+                    if (
+                        component.get("provider", {}).get("platform")
+                        == "android_appwidget"
+                    ):
+                        item["launcher"] = current["launcher"]
+                        item["prior_widget_ids"] = device_adapters.launcher_widget_ids(
+                            item["serial"], current["launcher"], item["provider"]
+                        )
                     item["status"] = "pending_user_action"
             except (adb.AdbError, PackError, OSError) as exc:
                 item.update(status="failed", reason=str(exc))
@@ -376,6 +415,8 @@ def run_job(store, job_id):
                     )
                 job["items"] = [item if i["id"] == item_id else i for i in job["items"]]
                 _persist(store, job)
+            if "prior_widget_ids" in item and item["status"] == "pending_user_action":
+                break
     except Exception as exc:
         with LOCK:
             job = store.get("job", job_id)
@@ -442,13 +483,60 @@ def acknowledge(store, job_id, item_id, outcome, confirmed=False):
         item = next((i for i in job["items"] if i["id"] == item_id), None)
         if not item or item["status"] != "pending_user_action":
             raise PackError("Only a pending device action can be confirmed or skipped")
+        if outcome == "applied" and "prior_widget_ids" in item:
+            raise PackError("Waiting for Android to verify the new launcher widget")
         if outcome == "applied" and not confirmed:
             raise PackError("Confirm you checked the result on the device")
         item.update(
             status=outcome,
             verification="user_reported" if outcome == "applied" else "none",
         )
-        _persist(store, job)
+        resume_after_widget(store, job, item)
+        return job
+
+
+def resume_after_widget(store, job, item):
+    resume = "prior_widget_ids" in item and any(
+        i["status"] is None for i in job["items"]
+    )
+    job["running"] = resume
+    _persist(store, job)
+    if resume:
+        EXECUTOR.submit(run_job, store, job["id"])
+
+
+def verify_placement(store, job_id):
+    job = store.get("job", job_id)
+    if not job:
+        raise KeyError("Apply job not found")
+    item = next(
+        (
+            i
+            for i in job["items"]
+            if "prior_widget_ids" in i and i["status"] == "pending_user_action"
+        ),
+        None,
+    )
+    if job["running"] or not item:
+        return job
+    current = device_adapters.launcher_widget_ids(
+        item["serial"], item["launcher"], item["provider"]
+    )
+    added = set(current) - set(item["prior_widget_ids"])
+    if len(added) != 1:
+        return job
+    with LOCK:
+        job = store.get("job", job_id)
+        actual = next(i for i in job["items"] if i["id"] == item["id"])
+        if (
+            actual["status"] == "pending_user_action"
+            and not job["running"]
+            and not job["cancel_requested"]
+        ):
+            actual.update(
+                status="applied", verification="launcher_binding", widget_id=added.pop()
+            )
+            resume_after_widget(store, job, actual)
         return job
 
 
@@ -476,6 +564,11 @@ def retry_job(store, job_id):
             raise KeyError("Apply job not found")
         if job["running"]:
             raise PackError("Job is already running")
+        if any(
+            "prior_widget_ids" in i and i["status"] == "pending_user_action"
+            for i in job["items"]
+        ):
+            raise PackError("Finish or skip the pending widget before retrying")
         if not any(i["status"] == "failed" for i in job["items"]):
             raise PackError("There are no failed items to retry")
         for other in store.all("job"):

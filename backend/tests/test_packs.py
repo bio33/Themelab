@@ -378,6 +378,9 @@ def test_plan_only_selected_targets_and_provider_unavailability(imported, adapte
 
 def test_requested_actions_are_pending_and_user_reported_completion(imported, adapters):
     store, pack = imported
+    selection = service.default_selection(pack)
+    selection["overrides"] = [dict(component_id="clock-widget", enabled=False)]
+    service.save_selection(store, pack["id"], selection)
     plan = service.make_plan(store, pack["id"], {"phone": "PHONE", "watch": "WATCH"})
     job = service.start_job(store, pack["id"], plan["id"], submit=False)
     service.run_job(store, job["id"])
@@ -570,3 +573,53 @@ def test_api_import_selection_plan_and_job_completion(
         assert done.json()["items"][0]["verification"] == "user_reported"
         reset = client.post("/api/packs/" + key + "/selection/reset").json()
         assert reset["targets"]["watch"] and reset["overrides"] == []
+
+
+def test_widget_waits_for_single_new_binding_then_resumes(
+    imported, adapters, monkeypatch
+):
+    store, pack = imported
+    record = dict(
+        component="org.example/.Clock",
+        category="analog_clock",
+        native=True,
+        label="ThemeLab Clock",
+    )
+    discover = device_adapters.discover
+
+    def with_clock(serial):
+        snapshot = discover(serial)
+        snapshot["launcher"] = "home/.Main"
+        snapshot["providers"]["android_appwidget"]["capabilities"] = [record]
+        return snapshot
+
+    monkeypatch.setattr(device_adapters, "discover", with_clock)
+    ids = [4]
+    monkeypatch.setattr(device_adapters, "launcher_widget_ids", lambda *args: list(ids))
+    plan = service.make_plan(store, pack["id"], {"phone": "PHONE", "watch": "WATCH"})
+    # Run the widget first so the next real item must wait for Android.
+    plan["items"].sort(key=lambda i: i["id"] != "clock-widget")
+    store.put("plan", plan["id"], plan)
+    job_id = service.start_job(store, pack["id"], plan["id"], submit=False)["id"]
+    service.run_job(store, job_id)
+    assert (
+        service.verify_placement(store, job_id)["items"][0]["status"]
+        == "pending_user_action"
+    )
+    assert not adapters
+    with pytest.raises(PackError, match="Waiting for Android"):
+        service.acknowledge(store, job_id, "clock-widget", "applied", True)
+    ids.extend([5, 6])
+    assert (
+        service.verify_placement(store, job_id)["items"][0]["status"]
+        == "pending_user_action"
+    )
+    ids.remove(6)
+    monkeypatch.setattr(service.EXECUTOR, "submit", lambda fn, *args: fn(*args))
+    service.verify_placement(store, job_id)
+    job = store.get("job", job_id)
+    assert job["items"][0]["widget_id"] == 5
+    assert job["items"][0]["verification"] == "launcher_binding"
+    assert len(adapters) == 2
+    service.verify_placement(store, job_id)
+    assert len(adapters) == 2

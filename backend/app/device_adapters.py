@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 import hashlib
+import struct
+import time
+from functools import lru_cache
 import re
 from pathlib import Path
 from typing import Protocol
 
-from . import adb
+from . import adb, apk_manifest, provider_matching
 from .pack_models import COMPONENT
 
 QUERIES = {
@@ -26,6 +29,40 @@ QUERIES = {
 class DeviceAdapter(Protocol):
     def discover(self, serial: str) -> dict: ...
     def stage(self, serial: str, source: Path, pack_id: str, label: str) -> dict: ...
+
+
+@lru_cache(maxsize=256)
+def _manifest(serial, apk, cache_window):
+    # Inspect only the compiled manifest. No APK or user files are copied to disk.
+    # apk is validated before interpolation into the Android shell command.
+    command = f"unzip -p '{apk}' AndroidManifest.xml | head -c {apk_manifest.MAX_MANIFEST + 1}"
+    data = adb.on_device(serial, "exec-out", command, binary=True)
+    try:
+        return apk_manifest.decode(data)
+    except (ValueError, struct.error, UnicodeError):
+        return None
+
+
+def installed_capabilities(serial, platform, components):
+    packages = {component.split("/")[0] for component in components}
+    listings = str(
+        adb.on_device(
+            serial, "shell", "pm", "list", "packages", "-f", "--user", "current"
+        )
+    )
+    result = []
+    for line in listings.splitlines():
+        path, sep, package = line.removeprefix("package:").rpartition("=")
+        if (
+            not sep
+            or package not in packages
+            or not re.fullmatch(r"/[a-zA-Z0-9/._=+~@-]+\.apk", path)
+        ):
+            continue
+        root = _manifest(serial, path, int(time.monotonic() // 60))
+        if root is not None and root.get("package") == package:
+            result.extend(provider_matching.from_manifest(root, platform, components))
+    return result
 
 
 class AndroidAdapter:
@@ -74,6 +111,8 @@ class AndroidAdapter:
                         query,
                         "--brief",
                         "--components",
+                        "--user",
+                        "current",
                         "-a",
                         action,
                     )
@@ -96,6 +135,13 @@ class AndroidAdapter:
                     "components": components,
                     "types_verified": False,
                 }
+                if components and platform != "wear_os_tile":
+                    try:
+                        providers[platform]["capabilities"] = installed_capabilities(
+                            serial, platform, components
+                        )
+                    except adb.AdbError:
+                        providers[platform]["capabilities"] = []
             except adb.AdbError as exc:
                 providers[platform] = {
                     "status": "unknown",
@@ -215,3 +261,36 @@ ADAPTERS: dict[str, DeviceAdapter] = {
 
 def discover(serial):
     return AndroidAdapter().discover(serial)
+
+
+def launcher_widget_ids(serial, launcher, provider):
+    """Read launcher bindings for this user, rejecting unrecognized dump formats."""
+    user = str(adb.on_device(serial, "shell", "am", "get-current-user")).strip()
+    if not user.isdecimal() or not COMPONENT.fullmatch(launcher):
+        raise adb.AdbError("Cannot verify the active launcher and Android user")
+    dump = str(adb.on_device(serial, "shell", "dumpsys", "appwidget"))
+    section = re.search(r"(?ms)^Widgets:\s*\n(.*?)^Hosts:", dump)
+    if not section:
+        raise adb.AdbError("This launcher does not expose verifiable widget bindings")
+    blocks = re.split(r"(?m)^\s*\[\d+\] id=(\d+)\s*$", section[1])
+    if blocks[0].strip():
+        raise adb.AdbError("Unrecognized Android widget records")
+    ids = []
+    for widget_id, record in zip(blocks[1::2], blocks[2::2]):
+        host = re.search(r"host=HostId\{user:(\d+),[^\n}]*pkg:([\w.]+)\}", record)
+        bound = re.search(
+            r"provider=ProviderId\{user:(\d+),[^\n}]*cmp:ComponentInfo\{([^}]+)\}",
+            record,
+        )
+        if not host or ("provider=" in record and not bound):
+            raise adb.AdbError("Unrecognized launcher binding metadata")
+        if (
+            host.groups() == (user, launcher.split("/")[0])
+            and bound
+            and bound[1] == user
+        ):
+            if provider_matching.canonical(bound[2]) == provider_matching.canonical(
+                provider
+            ):
+                ids.append(int(widget_id))
+    return ids

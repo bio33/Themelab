@@ -193,11 +193,12 @@ class ApplyItem(Model):
     label: str
     serial: str | None = None
     provider: str | None = None
+    provider_label: str | None = None
     asset: str | None = None
     mode: Literal["user_action", "unsupported"] = "user_action"
     reason: str = ""
     instructions: list[str] = Field(default_factory=list)
     status: ItemStatus | None = None
-    verification: Literal["none", "user_reported"] = "none"
+    verification: Literal["none", "user_reported", "launcher_binding"] = "none"
     staged_files: list[dict[str, Any]] = Field(default_factory=list)
     attempts: int = 0
