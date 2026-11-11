@@ -1,0 +1,381 @@
+{
+  "schema_version": "1.0.0",
+  "theme": {
+    "id": "ivory-sakura",
+    "title": "Ivory Sakura",
+    "version": "1.0.0",
+    "description": "A quiet moment, painted in ink",
+    "tags": [
+      "classic",
+      "coordinated",
+      "live"
+    ],
+    "palette": {
+      "background": "#EFE8DB",
+      "foreground": "#363530",
+      "accent": "#B97E88"
+    }
+  },
+  "generation_policy": {
+    "phone_live_required": true,
+    "watch_live_required": true,
+    "fetch_missing_optional_components": false
+  },
+  "phone": {
+    "live_wallpaper": {
+      "path": "phone/live-wallpaper.mp4",
+      "mime_type": "video/mp4",
+      "sha256": "8615b9372cc86b07f4adad11ac783426754fe04cf01856fcd208817ccf0b8d48",
+      "width": 1080,
+      "height": 2340,
+      "duration_seconds": 8,
+      "fps": 30,
+      "loop": true,
+      "audio": false
+    },
+    "static_wallpaper": {
+      "path": "phone/wallpaper.png",
+      "mime_type": "image/png",
+      "sha256": "77a86f3b0628c2b23e48320407cb522f1592f8ec833223989256cac07abf9abd",
+      "width": 1440,
+      "height": 3120
+    },
+    "widgets": [
+      {
+        "id": "phone-digital_clock",
+        "label": "Minimal digital clock",
+        "category": "digital_clock",
+        "default_enabled": true,
+        "availability": "suggested",
+        "apply_mode": "user_action",
+        "provider": {
+          "platform": "android_appwidget",
+          "category": "digital_clock",
+          "strategy": "discover_on_device",
+          "component": null
+        },
+        "placement": {
+          "page": 0,
+          "column": 0,
+          "row": 0,
+          "span_columns": 4,
+          "span_rows": 1,
+          "grid_columns": 4,
+          "grid_rows": 6
+        },
+        "style": {
+          "foreground": "#363530",
+          "accent": "#B97E88",
+          "background": "transparent",
+          "apply_only_if_provider_supports": true
+        },
+        "dependency_ids": []
+      },
+      {
+        "id": "phone-calendar",
+        "label": "Calendar / agenda",
+        "category": "calendar",
+        "default_enabled": true,
+        "availability": "suggested",
+        "apply_mode": "user_action",
+        "provider": {
+          "platform": "android_appwidget",
+          "category": "calendar",
+          "strategy": "discover_on_device",
+          "component": null
+        },
+        "placement": {
+          "page": 0,
+          "column": 0,
+          "row": 1,
+          "span_columns": 4,
+          "span_rows": 2,
+          "grid_columns": 4,
+          "grid_rows": 6
+        },
+        "style": {
+          "foreground": "#363530",
+          "accent": "#B97E88",
+          "background": "transparent",
+          "apply_only_if_provider_supports": true
+        },
+        "dependency_ids": []
+      },
+      {
+        "id": "phone-weather",
+        "label": "Simple weather",
+        "category": "weather",
+        "default_enabled": false,
+        "availability": "suggested",
+        "apply_mode": "user_action",
+        "provider": {
+          "platform": "android_appwidget",
+          "category": "weather",
+          "strategy": "discover_on_device",
+          "component": null
+        },
+        "placement": {
+          "page": 0,
+          "column": 0,
+          "row": 3,
+          "span_columns": 4,
+          "span_rows": 1,
+          "grid_columns": 4,
+          "grid_rows": 6
+        },
+        "style": {
+          "foreground": "#363530",
+          "accent": "#B97E88",
+          "background": "transparent",
+          "apply_only_if_provider_supports": true
+        },
+        "dependency_ids": []
+      },
+      {
+        "id": "phone-steps",
+        "label": "Daily steps",
+        "category": "steps",
+        "default_enabled": false,
+        "availability": "suggested",
+        "apply_mode": "user_action",
+        "provider": {
+          "platform": "android_appwidget",
+          "category": "steps",
+          "strategy": "discover_on_device",
+          "component": null
+        },
+        "placement": {
+          "page": 0,
+          "column": 0,
+          "row": 4,
+          "span_columns": 4,
+          "span_rows": 1,
+          "grid_columns": 4,
+          "grid_rows": 6
+        },
+        "style": {
+          "foreground": "#363530",
+          "accent": "#B97E88",
+          "background": "transparent",
+          "apply_only_if_provider_supports": true
+        },
+        "dependency_ids": []
+      }
+    ],
+    "layout": {
+      "grid_columns": 4,
+      "grid_rows": 6,
+      "strategy": "suggested_only",
+      "requires_launcher_support": true
+    }
+  },
+  "watch": {
+    "live_background": {
+      "path": "watch/live-background.webp",
+      "mime_type": "image/webp",
+      "sha256": "955437fbb29f6371c15acc68aacd9bf2de27bcdf0a7e85b85b45bdee2df63c90",
+      "width": 480,
+      "height": 480,
+      "duration_seconds": 6,
+      "fps": 10,
+      "loop": true,
+      "audio": false
+    },
+    "static_background": {
+      "path": "watch/wallpaper.png",
+      "mime_type": "image/png",
+      "sha256": "efbe77c1be510909472f0cc2e73bf8f702069676a26d1c93e9b72eb427bbcbdf",
+      "width": 480,
+      "height": 480
+    },
+    "preview_video": {
+      "path": "watch/live-wallpaper.mp4",
+      "mime_type": "video/mp4",
+      "sha256": "0ea31380fbebf538ca28769c30467a5ebd1ce12fe207bc85316191116996ba29",
+      "width": 480,
+      "height": 480,
+      "duration_seconds": 6,
+      "fps": 10,
+      "loop": true,
+      "audio": false
+    },
+    "clock": {
+      "style": "analog",
+      "hour_color": "#363530",
+      "minute_color": "#363530",
+      "second_color": "#B97E88",
+      "render_live_time": true
+    },
+    "complication_slots": [
+      {
+        "id": "watch-slot-1",
+        "slot_id": 1,
+        "bounds": {
+          "x": 0.32,
+          "y": 0.2,
+          "width": 0.36,
+          "height": 0.1
+        },
+        "supported_types": [
+          "SHORT_TEXT",
+          "RANGED_VALUE",
+          "EMPTY"
+        ],
+        "default_enabled": true,
+        "default_category": "date",
+        "options": [
+          {
+            "category": "date",
+            "label": "Date",
+            "provider": {
+              "platform": "wear_os_complication",
+              "category": "date",
+              "strategy": "discover_on_device",
+              "component": null
+            }
+          },
+          {
+            "category": "next_event",
+            "label": "Next Event",
+            "provider": {
+              "platform": "wear_os_complication",
+              "category": "next_event",
+              "strategy": "discover_on_device",
+              "component": null
+            }
+          }
+        ],
+        "style": {
+          "use_theme_palette": true
+        },
+        "apply_mode": "user_action",
+        "availability": "suggested"
+      },
+      {
+        "id": "watch-slot-2",
+        "slot_id": 2,
+        "bounds": {
+          "x": 0.65,
+          "y": 0.43,
+          "width": 0.18,
+          "height": 0.12
+        },
+        "supported_types": [
+          "SHORT_TEXT",
+          "RANGED_VALUE",
+          "EMPTY"
+        ],
+        "default_enabled": true,
+        "default_category": "weather",
+        "options": [
+          {
+            "category": "weather",
+            "label": "Weather",
+            "provider": {
+              "platform": "wear_os_complication",
+              "category": "weather",
+              "strategy": "discover_on_device",
+              "component": null
+            }
+          },
+          {
+            "category": "battery",
+            "label": "Battery",
+            "provider": {
+              "platform": "wear_os_complication",
+              "category": "battery",
+              "strategy": "discover_on_device",
+              "component": null
+            }
+          }
+        ],
+        "style": {
+          "use_theme_palette": true
+        },
+        "apply_mode": "user_action",
+        "availability": "suggested"
+      },
+      {
+        "id": "watch-slot-3",
+        "slot_id": 3,
+        "bounds": {
+          "x": 0.36,
+          "y": 0.65,
+          "width": 0.28,
+          "height": 0.1
+        },
+        "supported_types": [
+          "SHORT_TEXT",
+          "RANGED_VALUE",
+          "EMPTY"
+        ],
+        "default_enabled": false,
+        "default_category": "steps",
+        "options": [
+          {
+            "category": "steps",
+            "label": "Steps",
+            "provider": {
+              "platform": "wear_os_complication",
+              "category": "steps",
+              "strategy": "discover_on_device",
+              "component": null
+            }
+          },
+          {
+            "category": "heart_rate",
+            "label": "Heart Rate",
+            "provider": {
+              "platform": "wear_os_complication",
+              "category": "heart_rate",
+              "strategy": "discover_on_device",
+              "component": null
+            }
+          }
+        ],
+        "style": {
+          "use_theme_palette": true
+        },
+        "apply_mode": "user_action",
+        "availability": "suggested"
+      }
+    ],
+    "tiles": [
+      {
+        "id": "watch-tile-calendar",
+        "label": "Calendar tile",
+        "category": "calendar",
+        "default_enabled": false,
+        "availability": "suggested",
+        "apply_mode": "user_action",
+        "provider": {
+          "platform": "wear_os_tile",
+          "category": "calendar",
+          "strategy": "discover_on_device",
+          "component": null
+        }
+      },
+      {
+        "id": "watch-tile-health",
+        "label": "Health tile",
+        "category": "health",
+        "default_enabled": false,
+        "availability": "suggested",
+        "apply_mode": "user_action",
+        "provider": {
+          "platform": "wear_os_tile",
+          "category": "health",
+          "strategy": "discover_on_device",
+          "component": null
+        }
+      }
+    ],
+    "aod": {
+      "mode": "minimal_clock",
+      "animate": false,
+      "background": "#000000",
+      "foreground": "#363530"
+    }
+  },
+  "dependencies": []
+}

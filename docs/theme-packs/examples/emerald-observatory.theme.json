@@ -1,0 +1,391 @@
+{
+  "schema_version": "1.0.0",
+  "theme": {
+    "id": "emerald-observatory",
+    "title": "Emerald Observatory",
+    "version": "1.0.0",
+    "description": "Time beneath a golden sky",
+    "tags": [
+      "classic",
+      "coordinated",
+      "live"
+    ],
+    "palette": {
+      "background": "#031D17",
+      "foreground": "#EEE4CC",
+      "accent": "#B99B62"
+    }
+  },
+  "generation_policy": {
+    "phone_live_required": true,
+    "watch_live_required": true,
+    "fetch_missing_optional_components": false
+  },
+  "phone": {
+    "live_wallpaper": {
+      "path": "phone/live-wallpaper.mp4",
+      "mime_type": "video/mp4",
+      "sha256": "d5b645a733f46f1374efefdc0620edf7d179aa5b5fdffeb1cff91d19d620e14c",
+      "width": 1080,
+      "height": 2340,
+      "duration_seconds": 8,
+      "fps": 30,
+      "loop": true,
+      "audio": false
+    },
+    "static_wallpaper": {
+      "path": "phone/wallpaper.png",
+      "mime_type": "image/png",
+      "sha256": "b61cdd1368811f9981e2971fc3b1fd7d4e2ffb5d6645f7524a9dea18fa2b64b7",
+      "width": 1440,
+      "height": 3120
+    },
+    "widgets": [
+      {
+        "id": "phone-world_clock",
+        "label": "World clock — configure cities",
+        "category": "world_clock",
+        "default_enabled": true,
+        "availability": "suggested",
+        "apply_mode": "user_action",
+        "provider": {
+          "platform": "android_appwidget",
+          "category": "world_clock",
+          "strategy": "discover_on_device",
+          "component": null
+        },
+        "placement": {
+          "page": 0,
+          "column": 0,
+          "row": 0,
+          "span_columns": 4,
+          "span_rows": 2,
+          "grid_columns": 4,
+          "grid_rows": 6
+        },
+        "style": {
+          "foreground": "#EEE4CC",
+          "accent": "#B99B62",
+          "background": "transparent",
+          "apply_only_if_provider_supports": true
+        },
+        "dependency_ids": []
+      },
+      {
+        "id": "phone-battery",
+        "label": "Phone / connected-device battery",
+        "category": "battery",
+        "default_enabled": true,
+        "availability": "suggested",
+        "apply_mode": "user_action",
+        "provider": {
+          "platform": "android_appwidget",
+          "category": "battery",
+          "strategy": "discover_on_device",
+          "component": null
+        },
+        "placement": {
+          "page": 0,
+          "column": 0,
+          "row": 2,
+          "span_columns": 4,
+          "span_rows": 1,
+          "grid_columns": 4,
+          "grid_rows": 6
+        },
+        "style": {
+          "foreground": "#EEE4CC",
+          "accent": "#B99B62",
+          "background": "transparent",
+          "apply_only_if_provider_supports": true
+        },
+        "dependency_ids": []
+      },
+      {
+        "id": "phone-weather",
+        "label": "Weather / sunset",
+        "category": "weather",
+        "default_enabled": true,
+        "availability": "suggested",
+        "apply_mode": "user_action",
+        "provider": {
+          "platform": "android_appwidget",
+          "category": "weather",
+          "strategy": "discover_on_device",
+          "component": null
+        },
+        "placement": {
+          "page": 0,
+          "column": 0,
+          "row": 3,
+          "span_columns": 4,
+          "span_rows": 1,
+          "grid_columns": 4,
+          "grid_rows": 6
+        },
+        "style": {
+          "foreground": "#EEE4CC",
+          "accent": "#B99B62",
+          "background": "transparent",
+          "apply_only_if_provider_supports": true
+        },
+        "dependency_ids": []
+      },
+      {
+        "id": "phone-agenda",
+        "label": "Upcoming event",
+        "category": "agenda",
+        "default_enabled": false,
+        "availability": "suggested",
+        "apply_mode": "user_action",
+        "provider": {
+          "platform": "android_appwidget",
+          "category": "agenda",
+          "strategy": "discover_on_device",
+          "component": null
+        },
+        "placement": {
+          "page": 0,
+          "column": 0,
+          "row": 4,
+          "span_columns": 4,
+          "span_rows": 2,
+          "grid_columns": 4,
+          "grid_rows": 6
+        },
+        "style": {
+          "foreground": "#EEE4CC",
+          "accent": "#B99B62",
+          "background": "transparent",
+          "apply_only_if_provider_supports": true
+        },
+        "dependency_ids": []
+      }
+    ],
+    "layout": {
+      "grid_columns": 4,
+      "grid_rows": 6,
+      "strategy": "suggested_only",
+      "requires_launcher_support": true
+    }
+  },
+  "watch": {
+    "live_background": {
+      "path": "watch/live-background.webp",
+      "mime_type": "image/webp",
+      "sha256": "a3c434df7c8e6e5c8f20dffe1d883a1a1a4a34fa2caf90efa6e31a19fd11d068",
+      "width": 480,
+      "height": 480,
+      "duration_seconds": 6,
+      "fps": 10,
+      "loop": true,
+      "audio": false
+    },
+    "static_background": {
+      "path": "watch/wallpaper.png",
+      "mime_type": "image/png",
+      "sha256": "e111adf464bf0bdf4fa14a6e155a922d805b0807a4063f4bc9e95add8f355b69",
+      "width": 480,
+      "height": 480
+    },
+    "preview_video": {
+      "path": "watch/live-wallpaper.mp4",
+      "mime_type": "video/mp4",
+      "sha256": "334cd19b8465e10a40c9c9fc20c34670a91b27562217559df301ed62ebc544db",
+      "width": 480,
+      "height": 480,
+      "duration_seconds": 6,
+      "fps": 10,
+      "loop": true,
+      "audio": false
+    },
+    "clock": {
+      "style": "analog",
+      "hour_color": "#EEE4CC",
+      "minute_color": "#EEE4CC",
+      "second_color": "#B99B62",
+      "render_live_time": true
+    },
+    "complication_slots": [
+      {
+        "id": "watch-slot-1",
+        "slot_id": 1,
+        "bounds": {
+          "x": 0.32,
+          "y": 0.23,
+          "width": 0.36,
+          "height": 0.1
+        },
+        "supported_types": [
+          "SHORT_TEXT",
+          "RANGED_VALUE",
+          "EMPTY"
+        ],
+        "default_enabled": true,
+        "default_category": "date",
+        "options": [
+          {
+            "category": "date",
+            "label": "Date",
+            "provider": {
+              "platform": "wear_os_complication",
+              "category": "date",
+              "strategy": "discover_on_device",
+              "component": null
+            }
+          },
+          {
+            "category": "next_event",
+            "label": "Next Event",
+            "provider": {
+              "platform": "wear_os_complication",
+              "category": "next_event",
+              "strategy": "discover_on_device",
+              "component": null
+            }
+          }
+        ],
+        "style": {
+          "use_theme_palette": true
+        },
+        "apply_mode": "user_action",
+        "availability": "suggested"
+      },
+      {
+        "id": "watch-slot-2",
+        "slot_id": 2,
+        "bounds": {
+          "x": 0.67,
+          "y": 0.44,
+          "width": 0.18,
+          "height": 0.12
+        },
+        "supported_types": [
+          "SHORT_TEXT",
+          "RANGED_VALUE",
+          "EMPTY"
+        ],
+        "default_enabled": true,
+        "default_category": "battery",
+        "options": [
+          {
+            "category": "battery",
+            "label": "Battery",
+            "provider": {
+              "platform": "wear_os_complication",
+              "category": "battery",
+              "strategy": "discover_on_device",
+              "component": null
+            }
+          },
+          {
+            "category": "steps",
+            "label": "Steps",
+            "provider": {
+              "platform": "wear_os_complication",
+              "category": "steps",
+              "strategy": "discover_on_device",
+              "component": null
+            }
+          }
+        ],
+        "style": {
+          "use_theme_palette": true
+        },
+        "apply_mode": "user_action",
+        "availability": "suggested"
+      },
+      {
+        "id": "watch-slot-3",
+        "slot_id": 3,
+        "bounds": {
+          "x": 0.15,
+          "y": 0.44,
+          "width": 0.18,
+          "height": 0.12
+        },
+        "supported_types": [
+          "SHORT_TEXT",
+          "RANGED_VALUE",
+          "EMPTY"
+        ],
+        "default_enabled": false,
+        "default_category": "moon_phase",
+        "options": [
+          {
+            "category": "moon_phase",
+            "label": "Moon Phase",
+            "provider": {
+              "platform": "wear_os_complication",
+              "category": "moon_phase",
+              "strategy": "discover_on_device",
+              "component": null
+            }
+          },
+          {
+            "category": "sunrise_sunset",
+            "label": "Sunrise Sunset",
+            "provider": {
+              "platform": "wear_os_complication",
+              "category": "sunrise_sunset",
+              "strategy": "discover_on_device",
+              "component": null
+            }
+          },
+          {
+            "category": "weather",
+            "label": "Weather",
+            "provider": {
+              "platform": "wear_os_complication",
+              "category": "weather",
+              "strategy": "discover_on_device",
+              "component": null
+            }
+          }
+        ],
+        "style": {
+          "use_theme_palette": true
+        },
+        "apply_mode": "user_action",
+        "availability": "suggested"
+      }
+    ],
+    "tiles": [
+      {
+        "id": "watch-tile-weather",
+        "label": "Weather tile",
+        "category": "weather",
+        "default_enabled": false,
+        "availability": "suggested",
+        "apply_mode": "user_action",
+        "provider": {
+          "platform": "wear_os_tile",
+          "category": "weather",
+          "strategy": "discover_on_device",
+          "component": null
+        }
+      },
+      {
+        "id": "watch-tile-timer",
+        "label": "Timer tile",
+        "category": "timer",
+        "default_enabled": false,
+        "availability": "suggested",
+        "apply_mode": "user_action",
+        "provider": {
+          "platform": "wear_os_tile",
+          "category": "timer",
+          "strategy": "discover_on_device",
+          "component": null
+        }
+      }
+    ],
+    "aod": {
+      "mode": "minimal_clock",
+      "animate": false,
+      "background": "#000000",
+      "foreground": "#EEE4CC"
+    }
+  },
+  "dependencies": []
+}

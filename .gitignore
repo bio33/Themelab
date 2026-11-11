@@ -6,3 +6,5 @@ frontend/dist/
 .pytest_cache/
 data/themes/*/
 !.gitkeep
+data/packs/
+coverage/

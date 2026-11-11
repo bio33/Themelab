@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './style.css';
+import PackStudio from './PackStudio';
 
 const API = 'http://127.0.0.1:8000';
 
@@ -110,10 +111,10 @@ function App() {
       <div className="navitem active"><Icon name="monitor"/> Dashboard</div>
       <div className="navitem"><Icon name="phone"/> Device manager <span className="count">{devices.length}</span></div>
       <div className="navitem"><Icon name="image"/> Theme library <span className="count">{themes.length}</span></div>
-      <div className="side-bottom"><div className="statusline"><span className={`statusdot ${health?.adb?'green':'red'}`}/>{health?.adb?'ADB ready':'ADB unavailable'}</div><p>Local-first. No account required. All ADB actions stay on your computer.</p><span className="version">MVP · v0.1.0</span></div>
+      <div className="side-bottom"><div className="statusline"><span className={`statusdot ${health?.adb?'green':'red'}`}/>{health?.adb?'ADB ready':'ADB unavailable'}</div><p>Local-first. No account required. All ADB actions stay on your computer.</p><span className="version">Theme packs · v0.2.0</span></div>
     </aside>
     <main>
-      <header><div><div className="eyebrow">DEVICE CUSTOMIZATION</div><h1>Control center</h1><p>Connect phones, organize themes, and transfer custom wallpapers.</p></div><button className="button outlined" onClick={refreshAll} disabled={!!busy}><Icon name="refresh" size={17}/> Refresh devices</button></header>
+      <header><div><div className="eyebrow">DEVICE CUSTOMIZATION</div><h1>Control center</h1><p>Coordinate phone and watch themes, with motion and optional live information.</p></div><button className="button outlined" onClick={refreshAll} disabled={!!busy}><Icon name="refresh" size={17}/> Refresh devices</button></header>
       {notice && <div className={`alert ${notice.type}`}><Icon name={notice.type==='error'?'info':'check'} size={18}/><span>{notice.text}</span><button onClick={()=>setNotice(null)} aria-label="Dismiss">×</button></div>}
       {!health?.adb && <div className="alert error"><Icon name="info" size={18}/>ADB could not be found. Add Android SDK Platform-Tools to PATH, then restart the backend.</div>}
       <div className="main-grid">
@@ -128,7 +129,8 @@ function App() {
           <div className="preview-footer"><Icon name="info" size={17}/> Screenshot captures happen on demand, not continuously.</div>
         </section>
       </div>
-      <section className="panel theme-panel"><div className="panel-top"><div><h2>Theme library</h2><p>Prepare art once and deploy it to any connected device.</p></div></div>
+      <PackStudio devices={devices}/>
+      <section className="panel theme-panel"><div className="panel-top"><div><h2>Legacy wallpaper library</h2><p>Your existing still-image workflow remains available. Import these themes into the pack library to track missing animations.</p></div></div>
         <div className="theme-grid"><div className="theme-controls"><form onSubmit={createTheme} className="create-row"><input value={themeName} onChange={e=>setThemeName(e.target.value)} maxLength={64} placeholder="Theme name (e.g. Neon City)" aria-label="Theme name"/><button type="submit" disabled={!themeName.trim()||!!busy} className="button primary small"><Icon name="plus" size={17}/> Create</button></form>
           <label className="label">SELECT THEME</label><div className="theme-list">{themes.length===0?<div className="empty small-empty">Create your first theme to begin.</div>:themes.map(t=><button key={t.id} className={`theme-option ${themeId===t.id?'chosen':''}`} onClick={()=>setThemeId(t.id)}><span className="theme-thumbnail">{t.wallpaper?<img src={`${API}/api/themes/${t.id}/wallpaper`}/>:<Icon name="image"/>}</span><span><strong>{t.name}</strong><small>{t.wallpaper?`${t.wallpaper.width} × ${t.wallpaper.height}`:'No wallpaper yet'}</small></span>{themeId===t.id && <Icon name="check" size={18}/>}</button>)}</div>
           <label className={`button outlined upload-button ${!themeId||!!busy?'disabled':''}`}><Icon name="upload" size={17}/> Import wallpaper <input type="file" accept="image/png,image/jpeg,image/webp,image/bmp" onChange={uploadWallpaper} disabled={!themeId||!!busy}/></label>

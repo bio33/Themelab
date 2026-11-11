@@ -6,6 +6,7 @@ import json
 import re
 import subprocess
 import uuid
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Annotated
@@ -20,16 +21,36 @@ from . import adb
 
 ROOT = Path(__file__).resolve().parents[2]
 THEMES_ROOT = ROOT / "data" / "themes"
+PACKS_ROOT = ROOT / "data" / "packs"
 THEMES_ROOT.mkdir(parents=True, exist_ok=True)
 MAX_UPLOAD = 25 * 1024 * 1024
 Image.MAX_IMAGE_PIXELS = 25_000_000
 ID_PATTERN = re.compile(r"^[a-f0-9]{12}$")
 
-app = FastAPI(title="Android Customization Studio", version="0.1.0")
+@asynccontextmanager
+async def lifespan(_):
+    from .pack_service import recover_jobs
+    from .pack_store import Store
+    recover_jobs(Store(PACKS_ROOT))
+    yield
+
+app = FastAPI(title="ThemeLab", version="0.2.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
     allow_methods=["GET", "POST"], allow_headers=["*"], allow_credentials=False
 )
+
+from .pack_import import PackError
+from .pack_routes import router as pack_router
+app.include_router(pack_router)
+
+@app.exception_handler(PackError)
+async def pack_exception_handler(_, exc):
+    return Response(content=json.dumps({"detail":str(exc)}),status_code=422,media_type="application/json")
+
+@app.exception_handler(KeyError)
+async def missing_exception_handler(_, exc):
+    return Response(content=json.dumps({"detail":str(exc)}),status_code=404,media_type="application/json")
 
 
 class ThemeInput(BaseModel):
@@ -60,9 +81,13 @@ def health():
     try:
         adb_path = adb.adb_binary()
         version = str(adb.run_adb("version")).splitlines()[0]
-        return {"ok": True, "adb": True, "adb_path": adb_path, "adb_version": version}
+        import shutil
+        return {"ok": True, "adb": True, "adb_path": adb_path, "adb_version": version,
+                "ffmpeg": bool(shutil.which("ffmpeg")), "ffprobe": bool(shutil.which("ffprobe"))}
     except adb.AdbError as exc:
-        return {"ok": True, "adb": False, "error": str(exc)}
+        import shutil
+        return {"ok": True, "adb": False, "error": str(exc),
+                "ffmpeg": bool(shutil.which("ffmpeg")), "ffprobe": bool(shutil.which("ffprobe"))}
 
 
 @app.get("/api/devices")

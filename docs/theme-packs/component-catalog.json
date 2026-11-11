@@ -1,0 +1,139 @@
+{
+  "schema_version": "1.0.0",
+  "rule": "Required identifies a complete dual-device theme pack. Optional components may be omitted entirely. Do not fetch missing optional assets automatically.",
+  "components": [
+    {
+      "id": "identity",
+      "device": "both",
+      "required": true,
+      "description": "Title, ID and version; optional description and author/source",
+      "accepted_input": "JSON"
+    },
+    {
+      "id": "palette",
+      "device": "both",
+      "required": true,
+      "description": "Background, foreground, accent and semantic colors",
+      "accepted_input": "Hex colors"
+    },
+    {
+      "id": "phone.live_wallpaper",
+      "device": "phone",
+      "required": true,
+      "description": "Looping animated wallpaper",
+      "accepted_input": "H.264 MP4; optional Android live-wallpaper engine reference"
+    },
+    {
+      "id": "watch.live_background",
+      "device": "watch",
+      "required": true,
+      "description": "Looping animated face background for active mode",
+      "accepted_input": "Animated WebP preferred; GIF or image sequence via adapter"
+    },
+    {
+      "id": "phone.static_wallpaper",
+      "device": "phone",
+      "required": false,
+      "description": "Static home/lock fallback",
+      "accepted_input": "PNG/JPEG/WebP"
+    },
+    {
+      "id": "phone.widgets",
+      "device": "phone",
+      "required": false,
+      "description": "Clock, weather, agenda, battery, music, steps, world clock",
+      "accepted_input": "Provider reference and optional provider-specific preset"
+    },
+    {
+      "id": "phone.layout",
+      "device": "phone",
+      "required": false,
+      "description": "Widget bounds, pages, grid, dock and app shortcuts",
+      "accepted_input": "Launcher-specific JSON"
+    },
+    {
+      "id": "phone.icons",
+      "device": "phone",
+      "required": false,
+      "description": "App icon mapping, icon pack and folder style",
+      "accepted_input": "SVG/PNG/WebP or installed icon-pack reference"
+    },
+    {
+      "id": "phone.typography",
+      "device": "phone",
+      "required": false,
+      "description": "Clock and widget font/style suggestions",
+      "accepted_input": "Font token; optional licensed TTF/OTF"
+    },
+    {
+      "id": "phone.lock_screen",
+      "device": "phone",
+      "required": false,
+      "description": "Clock appearance, shortcuts and supported lock-screen widgets",
+      "accepted_input": "Device-adapter settings"
+    },
+    {
+      "id": "phone.sounds",
+      "device": "phone",
+      "required": false,
+      "description": "Ringtone, notification and alarm sounds",
+      "accepted_input": "OGG/WAV/MP3"
+    },
+    {
+      "id": "phone.system_style",
+      "device": "phone",
+      "required": false,
+      "description": "Dark/light preference and supported system accents",
+      "accepted_input": "Device-adapter settings"
+    },
+    {
+      "id": "watch.clock",
+      "device": "watch",
+      "required": false,
+      "description": "Live analog hands, dial, indexes or digital time",
+      "accepted_input": "Declarative style and SVG/PNG assets"
+    },
+    {
+      "id": "watch.complication_slots",
+      "device": "watch",
+      "required": false,
+      "description": "Date, battery, steps, weather, agenda, heart rate and other sources",
+      "accepted_input": "Slot geometry, supported types and provider preference"
+    },
+    {
+      "id": "watch.tiles",
+      "device": "watch",
+      "required": false,
+      "description": "Health, weather, calendar and timer pages beside the face",
+      "accepted_input": "Installed tile-provider reference"
+    },
+    {
+      "id": "watch.aod",
+      "device": "watch",
+      "required": false,
+      "description": "Minimal static always-on display design",
+      "accepted_input": "Static artwork or minimal live-time profile; animation disabled"
+    },
+    {
+      "id": "watch.face_package",
+      "device": "watch",
+      "required": false,
+      "description": "Built/installable face or face source project",
+      "accepted_input": "WFF project; adapter-supported signed APK/AAB or WFS project"
+    },
+    {
+      "id": "previews",
+      "device": "both",
+      "required": false,
+      "description": "Phone/watch screenshots and short motion previews",
+      "accepted_input": "PNG/JPEG/MP4"
+    },
+    {
+      "id": "dependencies",
+      "device": "both",
+      "required": false,
+      "description": "Provider apps, permissions, licenses, cost and configuration needs",
+      "accepted_input": "JSON references; never automatic purchases/installations"
+    }
+  ]
+}
